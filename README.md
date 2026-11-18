@@ -25,6 +25,10 @@ docker compose exec -T app pytest -q
 
 拒绝规则优先于允许，授权必须同时命中资源、分区和生效窗；显式拒绝不得被宽授权覆盖。
 
+## 兼容扩展
+
+共享方文件在原八列后新增来源系统等列时按兼容扩展接收，不整批退回；每份文件形成唯一兼容结论并保留原列与新增列依据。受影响访问按原列口径与扩展口径重取授权和分区结果，页面标注差异来源；列差异解释不完整时暂停封存，同文件重试不新增版本，失败保留旧结论。
+
 ## 演示
 
 1. 打开首页，核对当次计算、差异和隔离原因。
@@ -34,7 +38,7 @@ docker compose exec -T app pytest -q
 
 ## 输入与输出
 
-输入列见 `docs/DATA-DICTIONARY.md`。项目包含dirty.csv、clean.csv、legacy.csv，统一走实际导入路径。上传限制4MB，拒绝不带时区的时间。业务键按字符串保留，Decimal参与计算，空值不会当零。
+输入列见 `docs/DATA-DICTIONARY.md`。项目包含dirty.csv、clean.csv、legacy.csv、extended.csv，统一走实际导入路径。上传限制4MB，拒绝不带时区的时间。业务键按字符串保留，Decimal参与计算，空值不会当零。
 
 `POST /api/runs` 接收sample或csv；`GET /api/runs`返回历史批次；`POST /api/runs/<id>/review`需要version与decision；`GET /api/runs/<id>/archive`返回唯一证据导出。
 

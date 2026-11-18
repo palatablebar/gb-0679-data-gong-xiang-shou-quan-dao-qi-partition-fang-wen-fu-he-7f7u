@@ -29,6 +29,10 @@
 | TRAP-07 | 上游结果空值 | 误报拒绝 | 隔离缺失 | `app/values.py` | `tests/test_m3.py::test_real_missing_decision_not_zero` |
 | TRAP-19 | 允许与拒绝重叠 | 后写覆盖 | 拒绝优先且排序证据 | `app/modules/m4_conflicts/rules.py` | `tests/test_m4.py::test_deny_priority_counterexample` |
 | TRAP-23 | 授权到期点 | 多放行一次 | 半开生效窗 | `app/modules/m3_grants/rules.py` | `tests/test_m3.py::test_expiry_endpoint_excluded` |
+| TRAP-27 | 新增来源列 | 表头不等整批退回 | 原列前缀匹配即兼容扩展，冲突列名才退回 | `app/compat.py` | `tests/test_compat.py::test_extended_header_accepted_not_rejected` |
+| TRAP-28 | 新增列静默改结论 | 直接接收无痕迹 | 受影响访问重取授权与分区并保留原列口径与差异来源 | `app/modules/m3_grants/rules.py` | `tests/test_compat.py::test_affected_accesses_rederive_grant_and_partition` |
+| TRAP-29 | 列差异解释缺失 | 照常封存 | 解释不完整暂停封存，批次不失败 | `app/modules/m7_seals/rules.py` | `tests/test_compat.py::test_unexplained_column_pauses_seal` |
+| TRAP-30 | 同文件重试 | 重复写结论与版本 | 文件摘要唯一兼容结论INSERT OR IGNORE | `app/store.py` | `tests/test_compat.py::test_retry_same_file_no_new_version` |
 
 ## 对账规则
 

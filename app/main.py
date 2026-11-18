@@ -44,6 +44,7 @@ def create_app():
     def archive(run_id):
         from app.archive import build_archive
         run=store.get(run_id)
+        if run["stages"][-1]["metrics"].get("ready") is False: raise DomainError("SEAL_PAUSED","列差异解释不完整，封存已暂停",409)
         return application.response_class(build_archive(run),mimetype="text/csv",headers={"Content-Disposition":'attachment; filename="evidence.csv"'})
     for index,(slug,title) in enumerate(MODULES,1):
         module=importlib.import_module(f"app.modules.m{index}_{slug}.handler")

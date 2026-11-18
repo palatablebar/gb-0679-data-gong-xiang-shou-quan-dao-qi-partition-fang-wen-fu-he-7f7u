@@ -7,11 +7,19 @@ def connect():
     db=sqlite3.connect(DATA_DIR/"records.db",timeout=20)
     db.execute("PRAGMA journal_mode=WAL")
     db.execute("CREATE TABLE IF NOT EXISTS runs (id TEXT PRIMARY KEY,payload TEXT NOT NULL,version INTEGER NOT NULL DEFAULT 1,decision TEXT NOT NULL DEFAULT '待复核')")
+    db.execute("CREATE TABLE IF NOT EXISTS compat (file_sha256 TEXT PRIMARY KEY,run_id TEXT NOT NULL,payload TEXT NOT NULL)")
     return db
 def save(run_id,payload):
     with connect() as db:
         db.execute("INSERT OR IGNORE INTO runs(id,payload) VALUES (?,?)",(run_id,json.dumps(payload,ensure_ascii=False)))
+        compat=payload.get("compat")
+        if compat:
+            record={"run_id":run_id,"rule_version":payload["manifest"]["rule_version"],"conclusion":compat["conclusion"],"decision":compat["decision"],"base_columns":compat["base_columns"],"extension_columns":compat["extension_columns"]}
+            db.execute("INSERT OR IGNORE INTO compat(file_sha256,run_id,payload) VALUES (?,?,?)",(payload["manifest"]["input_sha256"],run_id,json.dumps(record,ensure_ascii=False)))
     return get(run_id)
+def compat_for(file_sha256):
+    with connect() as db: row=db.execute("SELECT payload FROM compat WHERE file_sha256=?",(file_sha256,)).fetchone()
+    return json.loads(row[0]) if row else None
 def get(run_id):
     with connect() as db: row=db.execute("SELECT payload,version,decision FROM runs WHERE id=?",(run_id,)).fetchone()
     if not row: raise DomainError("NOT_FOUND","批次不存在",404)

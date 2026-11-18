@@ -9,4 +9,8 @@ def evaluate(rows,context):
     ids=[str(r.get("event_id",r.get("_line",""))) for r in rows]
     if len(ids)!=len(set(ids)): raise DomainError("ARCHIVE_DUPLICATE","归档业务键重复")
     encoded=json.dumps(rows,ensure_ascii=False,sort_keys=True,default=str).encode()
-    return {"rows":rows,"quarantine":[],"metrics":{"records":len(rows),"source_lines":len(set(x for row in rows for x in sources(row))),"sha256":hashlib.sha256(encoded).hexdigest(),"ready":True,"differences":sum(r.get("status")=="差异" for r in rows)}}
+    compat=context.get("accesses",{}).get("compat",{})
+    unexplained=[c for c,e in compat.get("explanations",{}).items() if not e.get("complete")]
+    metrics={"records":len(rows),"source_lines":len(set(x for row in rows for x in sources(row))),"sha256":hashlib.sha256(encoded).hexdigest(),"ready":not unexplained,"differences":sum(r.get("status")=="差异" for r in rows)}
+    if unexplained: metrics.update(seal="暂停封存",pause_reasons="列差异解释不完整: "+",".join(unexplained))
+    return {"rows":rows,"quarantine":[],"metrics":metrics}

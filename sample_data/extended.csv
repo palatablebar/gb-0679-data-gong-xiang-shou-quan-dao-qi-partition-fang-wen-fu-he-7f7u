@@ -1,0 +1,7 @@
+event_id,principal,resource,partition,access_time,observed,reported,note,source_system
+10001,analyst,orders,2026-10,2026-11-25T00:00:00Z,allowed,1,新来源放行,HXDB
+10002,analyst,orders,2026-10,2026-11-25T00:00:00Z,blocked,0,新来源拦截,HXDB
+10003,guest,orders,2026-05,2026-11-16T00:00:00Z,allowed,1,新来源访客,HXDB
+10004,auditor,customers,2026-05,2026-11-16T00:00:00Z,allowed,1,旧列空来源,
+10005,analyst,orders,2026-09,2026-11-16T00:00:00Z,allowed,1,未登记来源,OLDAPP
+10006,auditor,customers,2026-05,2026-11-16T00:00:00Z,blocked,0,来源哨兵,NULL
